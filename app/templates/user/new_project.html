@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <table>
+        <tr valign="top">
+            <td><img src="{{ user.avatar(128) }}"></td>
+            <td><h2>User: {{ user.username }}</h2></td>
+        </tr>
+    </table>
+    <hr>
+    <h1>New Project</h1>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+
+        <p>
+            {{ form.projectid.label }}<br>
+            {{ form.projectid(size=32, readonly=True) }}
+            {% for error in form.projectid.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ form.name.label }}<br>
+            {{ form.name(size=32) }}
+            {% for error in form.name.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ form.fields.label }}<br>
+            {{ form.fields() }}
+            {% for error in form.fields.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ form.members_required.label }}<br>
+            {{ form.members_required() }}
+            {% for error in form.members_required.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ form.members.label }}<br>
+            {{ form.members(size=32, readonly=True) }}
+            {% for error in form.members.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ form.member_list.label }}<br>
+            {{ form.member_list(readonly=True) }}
+            {% for error in form.member_list.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ form.project_description.label }}<br>
+            {{ form.project_description() }}
+            {% for error in form.project_description.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ form.channel.label }}<br>
+            {{ form.channel(size=32, readonly=True) }}
+            {% for error in form.channel.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
+        <p>{{ form.submit() }}</p>
+
+        {{ form.csrf_token }}
+    </form>
+{% endblock %}
