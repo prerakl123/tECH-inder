@@ -44,7 +44,7 @@ If the project has already been installed, then you can run it inside the virtua
   Now run the virtual environment activate command again.
   > The command line should now look like this:
   >  ```ps1
-  >   (venv) C:\your_folder_path_to_techinder\
+  >   (venv) C:\your_folder_path_to_techinder\ >
   >  ```
   After successfully activating the venv run the flask app by using:
   ```ps1
