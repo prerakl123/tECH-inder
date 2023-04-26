@@ -24,12 +24,14 @@ def append_id_to_file(ID):
         id_file.close()
 
 
-def generate_id(id_type=UID, sample=False) -> str:
+def generate_id(id_type=UID, sample=False, append=False) -> str:
     if sample:
         return id_type + ''.join(random.choices(PRINTABLE_CHARS, k=32))
     _id = ''.join(random.choices(PRINTABLE_CHARS, k=32))
     while unique(_id) is False:
         _id = ''.join(random.choices(PRINTABLE_CHARS, k=32))
+    if append:
+        append_id_to_file(_id)
     return id_type + _id
 
 

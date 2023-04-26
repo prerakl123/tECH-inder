@@ -1,67 +1,7 @@
-ADD DIR app
-ADD FILE .flaskenv
-ADD FILE .gitignore
-ADD FILE changes.txt
-ADD FILE config.py
-ADD FILE requirements.txt
-ADD FILE setup.ps1
-ADD FILE techinder.py
+ADD FILE tests.py
 
-ADD DIR app\api
-ADD DIR app\auth
-ADD DIR app\const
-ADD DIR app\errors
-ADD DIR app\static
-ADD DIR app\templates
-ADD FILE app\__init__.py
-ADD FILE app\errors.py
-ADD FILE app\models.py
-ADD FILE app\search.py
-ADD FILE app\api\__init__.py
-ADD FILE app\api\auth.py
-ADD FILE app\api\errors.py
-ADD FILE app\api\tokens.py
-ADD FILE app\api\users.py
-ADD FILE app\auth\__init__.py
-ADD FILE app\auth\email.py
-ADD FILE app\auth\forms.py
-ADD FILE app\auth\routes.py
-ADD FILE app\const\constants.py
-ADD FILE app\const\ids.content
-ADD FILE app\const\methods.py
-ADD FILE app\const\report.content
-ADD FILE app\const\report.py
-ADD FILE app\const\user_report.content
-ADD FILE app\errors\__init__.py
-ADD FILE app\errors\handlers.py
-
-ADD DIR app\static\css
-ADD DIR app\static\js
-ADD FILE app\static\css\styles.css
-ADD FILE app\static\js\index.js
-
-ADD DIR app\templates\auth
-ADD DIR app\templates\email
-ADD DIR app\templates\errors
-ADD DIR app\templates\user
-ADD FILE app\templates\base.html
-ADD FILE app\templates\edit_profile.html
-ADD FILE app\templates\index.html
-ADD FILE app\templates\profile.html
-ADD FILE app\templates\auth\login.html
-ADD FILE app\templates\auth\register.html
-ADD FILE app\templates\auth\reset_password_request.html
-ADD FILE app\templates\email\project_announcement.html
-ADD FILE app\templates\email\project_join_request.html
-ADD FILE app\templates\email\register.html
-ADD FILE app\templates\email\reset_password.html
-ADD FILE app\templates\email\update_profile.html
-ADD FILE app\templates\errors\404.html
-ADD FILE app\templates\errors\500.html
-ADD FILE app\templates\user\_project.html
-ADD FILE app\templates\user\my_projects.html
-ADD FILE app\templates\user\new_project.html
-ADD FILE app\templates\user\project_chat.html
-
-
-"Added all the files for tECH-inder to run a basic starter version."
+"""
+> User model changed.
+> Added follower logic for users and projects.
+> Removed Likes model
+"""

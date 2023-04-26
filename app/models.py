@@ -12,6 +12,13 @@ def load_user(id):
     return User.query.get(id)
 
 
+followers = db.Table(
+    'followers',
+    db.Column('follower_id', db.String(64), db.ForeignKey('user.userid')),
+    db.Column('followed_id', db.String(64), db.ForeignKey('user.userid'))
+)
+
+
 class User(UserMixin, db.Model):
     userid = db.Column(db.String(64), primary_key=True)
     username = db.Column(db.String(64), unique=True)
@@ -21,12 +28,21 @@ class User(UserMixin, db.Model):
     interests = db.Column(db.String)
     github_profile = db.Column(db.String(108))
     about_me = db.Column(db.Text)
-    locationid = db.Column(db.String(64), db.ForeignKey('location.locationid'))
+    locationid = db.Column(db.String(64), db.ForeignKey('location.locationid', use_alter=True))
     privacy = db.Column(db.Boolean)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
+
+    followed = db.relationship(
+        'User',
+        secondary=followers,
+        primaryjoin=(followers.c.follower_id == userid),
+        secondaryjoin=(followers.c.followed_id == userid),
+        backref=db.backref('followers', lazy='dynamic'),
+        lazy='dynamic'
+    )
 
     projects = db.relationship('Project', backref='author', lazy='dynamic')
     reports = db.relationship('Misconduct', backref='author', lazy='dynamic')
@@ -48,6 +64,28 @@ class User(UserMixin, db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    def follow(self, user):
+        if not self.is_following(user):
+            self.followed.append(user)
+
+    def unfollow(self, user):
+        if self.is_following(user):
+            self.followed.remove(user)
+
+    def is_following(self, user):
+        return self.followed.filter(
+            followers.c.followed_id == user.userid).count() > 0
+
+    def followed_projects(self):
+        followed = Project.query.join(
+            followers,
+            (followers.c.followed_id == Project.userid)
+        ).filter(
+                followers.c.follower_id == self.userid
+        )
+        own = Project.query.filter_by(userid=self.userid)
+        return followed.union(own).order_by(Project.timestamp.desc())
 
     def get_id(self):
         return str(self.userid)
@@ -232,18 +270,18 @@ class Message(db.Model):
         return str(self.messageid)
 
 
-class Likes(db.Model):
-    likeid = db.Column(db.String(64), primary_key=True)
-    userid = db.Column(db.String(64), db.ForeignKey('user.userid'))
-    is_liked = db.Column(db.Boolean, default=True)
-    projectid = db.Column(db.String(64), db.ForeignKey('project.projectid'))
-    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-
-    def __repr__(self):
-        return '<Likes {}>'.format(self.projectid)
-
-    def get_id(self):
-        return str(self.likeid)
+# class Likes(db.Model):
+#     likeid = db.Column(db.String(64), primary_key=True)
+#     userid = db.Column(db.String(64), db.ForeignKey('user.userid'))
+#     is_liked = db.Column(db.Boolean, default=True)
+#     projectid = db.Column(db.String(64), db.ForeignKey('project.projectid'))
+#     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+#
+#     def __repr__(self):
+#         return '<Likes {}>'.format(self.projectid)
+#
+#     def get_id(self):
+#         return str(self.likeid)
 
 
 class Applied(db.Model):
@@ -264,7 +302,7 @@ class Applied(db.Model):
 class Location(db.Model):
     locationid = db.Column(db.Integer, primary_key=True)
     lat_long = db.Column(db.String(64))
-    userid = db.Column(db.Integer, db.ForeignKey('user.userid'))
+    userid = db.Column(db.Integer, db.ForeignKey('user.userid', use_alter=True))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
     def __repr__(self):
