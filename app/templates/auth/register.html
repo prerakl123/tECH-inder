@@ -6,13 +6,6 @@
         {{ form.hidden_tag() }}
 
         <p>
-            {{ form.userid.label }}<br>
-            {{ form.userid(readonly=True) }}
-            {% for error in form.userid.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>
             {{ form.username.label }}<br>
             {{ form.username(size=32) }}<br>
             {% for error in form.username.errors %}

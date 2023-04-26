@@ -1,5 +1,5 @@
 from app import app, db
-from app.models import User, Project, Likes, Location, Message, Misconduct, Applied
+from app.models import User, Project, followers, Location, Message, Misconduct, Applied
 
 
 @app.shell_context_processor
@@ -8,7 +8,7 @@ def make_shell_context():
         'db': db,
         'User': User,
         'Project': Project,
-        'Likes': Likes,
+        'followers': followers,
         'Location': Location,
         'Message': Message,
         'Misconduct': Misconduct,

@@ -2,13 +2,12 @@ import datetime
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, DateField, RadioField, TextAreaField, SubmitField, \
-    IntegerField
+    IntegerField, SelectField
 from wtforms.validators import ValidationError, DataRequired, Email, Length
 
 from app import app
-from app.const.constants import UID, LID, M, F, PN, OT, PUBLIC, PRIVATE, PID, CID
-from app.const.methods import generate_id
-from app.models import User, Project
+from app.const.constants import M, F, PN, OT, PUBLIC, PRIVATE
+from app.models import User
 
 app.app_context().push()
 
@@ -21,11 +20,11 @@ class LoginForm(FlaskForm):
 
 
 class RegistrationForm(FlaskForm):
-    userid = StringField("User ID", default=generate_id(UID))
+    userid = ''
     username = StringField('Username', validators=[DataRequired()])
     name = StringField('Full Name', validators=[DataRequired()])
     dob = DateField('Date of Birth')
-    gender = RadioField('Gender', choices=[M, F, PN, OT])
+    gender = SelectField('Gender', choices=[('M', M), ('F', F), ('PN', PN), ('OT', OT)])
     interests = TextAreaField(
         "Topics I'm interested in",
         description='Insert the topics you\'re interested in or proficient in separated by a semicolon (;).'
@@ -36,8 +35,8 @@ class RegistrationForm(FlaskForm):
         description='Write a short description about yourself. Can include your achievements, things you are interested'
                     ' in, your goals, etc'
     )
-    locationid = generate_id(LID)
-    privacy = RadioField('Select Privacy', choices=[PUBLIC, PRIVATE])
+    locationid = ''
+    privacy = BooleanField('Make Profile Private')
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     timestamp = datetime.datetime.now()
@@ -60,7 +59,7 @@ class RegistrationForm(FlaskForm):
 
 
 class NewProjectForm(FlaskForm):
-    projectid = StringField("Project ID", default=generate_id(PID))
+    projectid = ''
     userid = ''
     name = StringField(
         'Project Name', default='New Project', validators=[DataRequired()])
@@ -74,7 +73,7 @@ class NewProjectForm(FlaskForm):
     member_list = TextAreaField('Members', default='Can\'t be filled right now!')
     project_description = TextAreaField('Project Description', validators=[Length(max=100), DataRequired()])
     owner = True
-    channel = StringField('Channel', default=generate_id(CID))
+    channel = ''
     timestamp = datetime.datetime.now()
     submit = SubmitField('Create')
 
@@ -85,3 +84,42 @@ class NewProjectForm(FlaskForm):
     #             'Please use a different name for the project. '
     #             'Try using numbers, etc to create a unique project name.'
     #         )
+
+
+class EditProfileForm(FlaskForm):
+    userid = ''
+    username = StringField('Username', validators=[DataRequired()])
+    name = StringField('Full Name', validators=[DataRequired()])
+    dob = DateField('Date of Birth')
+    gender = SelectField('Gender', choices=[('M', M), ('F', F), ('PN', PN), ('OT', OT)])
+    interests = TextAreaField(
+        "Topics I'm interested in",
+        description='Insert the topics you\'re interested in or proficient in separated by a semicolon (;).'
+    )
+    github_profile = StringField('GitHub profile link (or username)')
+    about_me = TextAreaField(
+        'About me',
+        description='Write a short description about yourself. Can include your achievements, things you are interested'
+                    ' in, your goals, etc',
+        validators=[Length(min=0, max=500)]
+    )
+    locationid = ''
+    privacy = BooleanField('Make Profile Private')
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    password = ''
+    timestamp = datetime.datetime.now()
+    submit = SubmitField('Update')
+
+    def __init__(self, original_username, *args, **kwargs):
+        super(EditProfileForm, self).__init__(*args, **kwargs)
+        self.original_username = original_username
+
+    def validate_username(self, username):
+        if username.data != self.original_username:
+            user = User.query.filter_by(username=self.username.data).first()
+            if user is not None:
+                raise ValidationError('Please use a different username.')
+
+
+class EmptyForm(FlaskForm):
+    submit = SubmitField('Submit')

@@ -13,14 +13,6 @@
         {{ form.hidden_tag() }}
 
         <p>
-            {{ form.projectid.label }}<br>
-            {{ form.projectid(size=32, readonly=True) }}
-            {% for error in form.projectid.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-
-        <p>
             {{ form.name.label }}<br>
             {{ form.name(size=32) }}
             {% for error in form.name.errors %}
@@ -64,14 +56,6 @@
             {{ form.project_description.label }}<br>
             {{ form.project_description() }}
             {% for error in form.project_description.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-
-        <p>
-            {{ form.channel.label }}<br>
-            {{ form.channel(size=32, readonly=True) }}
-            {% for error in form.channel.errors %}
                 <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
