@@ -1,0 +1,11 @@
+ADD FILE email/reset_password.html
+ADD FILE reset_password_request.html
+
+"""
+Added logging and error handlers. Errors are now reported to the admin email IDs via the SMTP handler.
+Projects are now displayed on the index page of the user.
+Added explore functionality for users to search for new projects to join.
+Added Password reset functionality.
+Added Bootstrap CSS (partially).
+Fixed minor bugs.
+"""

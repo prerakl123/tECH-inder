@@ -5,9 +5,11 @@ from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
 from app import app, db
-from app.auth.forms import LoginForm, NewProjectForm, EditProfileForm, RegistrationForm, EmptyForm
-from app.const.constants import PUBLIC, PID, UID, GID
+from app.auth.forms import LoginForm, NewProjectForm, EditProfileForm, RegistrationForm, ResetPasswordRequestForm, \
+    EmptyForm, ResetPasswordForm
+from app.const.constants import PUBLIC, PID, UID, GID, CID
 from app.const.methods import generate_id
+from app.email import send_password_reset_email
 from app.models import User, Project
 
 
@@ -16,7 +18,16 @@ from app.models import User, Project
 @app.route('/index')
 @login_required
 def index():
-    return render_template("index.html", title='Home Page')
+    page = request.args.get('page', 1, type=int)
+    projects = current_user.followed_projects().paginate(
+        page=page,
+        per_page=app.config['PROJECTS_PER_PAGE'],
+        error_out=False
+    )
+    next_url = url_for('index', page=projects.next_num) if projects.has_next else None
+    prev_url = url_for('index', page=projects.prev_num) if projects.has_prev else None
+    return render_template("index.html", title='Home Page', projects=projects.items, next_url=next_url,
+                           prev_url=prev_url)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -67,6 +78,36 @@ def register():
         return redirect(url_for('login'))
     print('Registration Form Error section 3:', form.errors)
     return render_template('auth/register.html', title='Register', form=form)
+
+
+@app.route('/reset_password_request', methods=['POST', 'GET'])
+def reset_password_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = ResetPasswordRequestForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user:
+            send_password_reset_email(user)
+        flash('Check your email for the instructions to reset your password')
+        return redirect(url_for('login'))
+    return render_template('auth/reset_password_request.html', title='Reset Password', form=form)
+
+
+@app.route('/reset_password', methods=['POST', 'GET'])
+def reset_password(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    user = User.verify_reset_password_token(token)
+    if not user:
+        return redirect(url_for('index'))
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        user.set_password(form.password.data)
+        db.session.commit()
+        flash('Your password has been reset.')
+        return redirect(url_for('login'))
+    return render_template('auth/reset_password.html', form=form)
 
 
 @app.route('/profile/<username>')
@@ -133,14 +174,14 @@ def create_project(username):
         )
         project.set(
             members_required=form.members_required.data,
-            members=form.members.data,
+            members=0,
             member_list=form.member_list.data,
             project_description=form.project_description.data,
-            channel=form.channel.data
+            channel=generate_id(CID, append=True)
         )
         db.session.add(project)
         db.session.commit()
-        flash('Congratulations, your New Project has been created!')
+        flash(f'Your New Project: {project.name} is live!')
         return redirect(url_for('my_projects', username=username))
     return render_template('user/new_project.html', user=user, form=form)
 
@@ -183,6 +224,23 @@ def unfollow(username):
         return redirect(url_for('profile', username=username))
     else:
         return redirect(url_for('index'))
+
+
+@app.route('/explore')
+@login_required
+def explore():
+    page = request.args.get('page', 1, type=int)
+    projects = Project.query.order_by(
+        Project.timestamp.desc()
+    ).paginate(
+        page=page,
+        per_page=app.config['PROJECTS_PER_PAGE'],
+        error_out=False
+    )
+    next_url = url_for('explore', page=projects.next_num) if projects.has_next else None
+    prev_url = url_for('explore', page=projects.prev_num) if projects.has_prev else None
+    return render_template('index.html', title='Explore', projects=projects.items, next_url=next_url,
+                           prev_url=prev_url)
 
 
 @app.route('/logout')
