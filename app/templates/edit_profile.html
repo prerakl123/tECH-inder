@@ -5,78 +5,81 @@
     <form action="" method="post">
         {{ form.hidden_tag() }}
 
-        <p>
+
             {{ form.username.label }}<br>
             {{ form.username(size=32) }}<br>
             {% for error in form.username.errors %}
-            <span style="color: red;">[{{ error }}]</span>
+                <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
-        </p>
 
-        <p>
+
+
             {{ form.name.label }}<br>
             {{ form.name(size=32) }}<br>
             {% for error in form.name.errors %}
-            <span style="color: red;">[{{ error }}]</span>
+                <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
-        </p>
 
-        <p>
+
+
             {{ form.dob.label }}<br>
             {{ form.dob() }}<br>
             {% for error in form.dob.errors %}
-            <span style="color: red;">[{{ error }}]</span>
+                <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
-        </p>
 
-        <p>
+
+
             {{ form.gender.label }}<br>
             {{ form.gender() }}<br>
             {% for error in form.gender.errors %}
-            <span style="color: red;">[{{ error }}]</span>
+                <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
-        </p>
 
-        <p>
+
+
             {{ form.interests.label }}<br>
             {{ form.interests(cols=50, rows=4) }}<br>
             {% for error in form.interests.errors %}
-            <span style="color: red;">[{{ error }}]</span>
+                <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
-        </p>
 
-        <p>
-            {{ form.github_profile.label }}<br>
-            {{ form.github_profile() }}<br>
-            {% for error in form.github_profile.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
 
-        <p>
+        <div class="mb-3">
+            <label for="basic-url" class="form-label">Your GitHub username</label>
+            <div class="input-group">
+                <span class="input-group-text" id="basic-addon3">https://github.com/</span>
+                {{ form.github_profile() }}<br>
+                {% for error in form.github_profile.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+        </div>
+
+
             {{ form.about_me.label }}<br>
             {{ form.about_me(cols=50, rows=4) }}<br>
             {% for error in form.about_me.errors %}
-            <span style="color: red;">[{{ error }}]</span>
+                <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
-        </p>
 
-        <p>
+
+
             {{ form.privacy.label }}<br>
             {{ form.privacy() }}<br>
             {% for error in form.privacy.errors %}
-            <span style="color: red;">[{{ error }}]</span>
+                <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
-        </p>
 
-        <p>
+
+
             {{ form.email.label }}<br>
             {{ form.email(size=32) }}<br>
             {% for error in form.about_me.errors %}
-            <span style="color: red;">[{{ error }}]</span>
+                <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
-        </p>
 
-        <p>{{ form.submit() }}</p>
+
+        {{ form.submit() }}
     </form>
 {% endblock %}

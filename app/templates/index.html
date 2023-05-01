@@ -2,7 +2,30 @@
 
 {% block content %}
     <h1>Hi, {{ current_user.username }}!</h1>
-    {% for item in current_user.__dict__.items() %}
-        <p>{{ item }}</p>
-    {% endfor %}
+    <ul>
+        {% for project in projects %}
+            <li style="display: inline;">
+                    {# <h3>{{ project.name }}</h3> #}
+                    {# <h6>Author: @{{ project.author.username }}</h6> #}
+                    {# <p>{{ project.project_description }}</p> #}
+                    {# <p>Fields: {{ ' '.join(project.fields.split(';')) }}</p> #}
+                    {# <p>Members: {{ project.members }}/{{ project.members_required }}</P> #}
+                    {% include 'user/_project.html' %}
+            </li>
+        {% endfor %}
+    </ul>
+    <nav aria-label="...">
+        <ul class="pager">
+            <li class="previous{% if not prev_url %} disabled{% endif %}">
+                <a href="{{ prev_url or '#' }}">
+                    <span aria-hidden="true">&larr;</span> Newer posts
+                </a>
+            </li>
+            <li class="next{% if not next_url %} disabled{% endif %}">
+                <a href="{{ next_url or '#' }}">
+                    Older posts <span aria-hidden="true">&rarr;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
 {% endblock %}

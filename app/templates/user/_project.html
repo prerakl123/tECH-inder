@@ -1,10 +1,18 @@
-    <table>
-        <tr valign="top">
-            <td><img src="{{ project.author.avatar(36) }}"></td>
+    <table class="table table-hover">
+        <tr>
+            <td width="70px">
+                <a href="{{ url_for('profile', username=project.author.username) }}">
+                    <img src="{{ project.author.avatar(70) }}">
+                </a>
+            </td>
             <td>
                 <p>
-                    {{ project.author.username }}<br>
-                    {{ project.name }}
+                    {{ project.name }}<br>
+                    Author: <a href="{{ url_for('profile', username=project.author.username) }}">
+                                {{ project.author.username }}
+                            </a><br><br>
+                    {{ project.project_description }}
+                    Members: {{ project.members }}/{{ project.members_required }}
                 </p>
             </td>
         </tr>

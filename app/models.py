@@ -1,5 +1,7 @@
 from datetime import datetime, date
 from hashlib import md5
+from time import time
+import jwt
 
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -87,11 +89,33 @@ class User(UserMixin, db.Model):
         own = Project.query.filter_by(userid=self.userid)
         return followed.union(own).order_by(Project.timestamp.desc())
 
+    def get_reset_password_token(self, expires_in=600):
+        return jwt.encode({
+            'reset_password': self.userid,
+            'exp': time() + expires_in
+        },
+            app.config['SECRET_KEY'],
+            algorithm='HS256'
+        )
+
+    @staticmethod
+    def verify_reset_password_token(token):
+        try:
+            userid = jwt.decode(
+                token,
+                app.config['SECRET_KEY'],
+                algorithms=['HS256']
+            )['reset_password']
+        except:
+            return
+        return User.query.get(userid)
+
     def get_id(self):
         return str(self.userid)
 
     def set(self,
             name: str = None,
+            username: str = None,
             dob: date = None,
             gender: str = None,
             interests: str = None,
@@ -103,37 +127,37 @@ class User(UserMixin, db.Model):
             last_seen: datetime = None
             ):
 
-        if name:
+        if name is not None:
             self.name = name
 
-        if name:
-            self.name = name
+        if username is not None:
+            self.username = username
 
-        if dob:
+        if dob is not None:
             self.dob = dob
 
-        if gender:
+        if gender is not None:
             self.gender = gender
 
-        if interests:
+        if interests is not None:
             self.interests = interests
 
-        if github_profile:
+        if github_profile is not None:
             self.github_profile = github_profile
 
-        if about_me:
+        if about_me is not None:
             self.about_me = about_me
 
-        if locationid:
+        if locationid is not None:
             self.locationid = locationid
 
-        if privacy:
+        if privacy is not None:
             self.privacy = privacy
 
-        if password:
+        if password is not None:
             self.password_hash = generate_password_hash(password)
 
-        if last_seen:
+        if last_seen is not None:
             self.last_seen = last_seen
 
     def set_name(self, name):
@@ -201,25 +225,25 @@ class Project(db.Model):
             project_description: str = None,
             channel: str = None,
             ):
-        if name:
+        if name is not None:
             self.name = name
 
-        if fields:
+        if fields is not None:
             self.fields = fields
 
-        if members_required:
+        if members_required is not None:
             self.members_required = members_required
 
-        if members:
+        if members is not None:
             self.members = members
 
-        if member_list:
+        if member_list is not None:
             self.member_list = member_list
 
-        if project_description:
+        if project_description is not None:
             self.project_description = project_description
 
-        if channel:
+        if channel is not None:
             self.channel = channel
 
     def set_name(self, name):

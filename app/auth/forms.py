@@ -1,12 +1,12 @@
 import datetime
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, DateField, RadioField, TextAreaField, SubmitField, \
+from wtforms import StringField, PasswordField, BooleanField, DateField, TextAreaField, SubmitField, \
     IntegerField, SelectField
-from wtforms.validators import ValidationError, DataRequired, Email, Length
+from wtforms.validators import ValidationError, DataRequired, Email, Length, EqualTo
 
 from app import app
-from app.const.constants import M, F, PN, OT, PUBLIC, PRIVATE
+from app.const.constants import M, F, PN, OT
 from app.models import User
 
 app.app_context().push()
@@ -71,11 +71,11 @@ class NewProjectForm(FlaskForm):
     members_required = IntegerField('Members Required', validators=[DataRequired()])
     members = IntegerField('Current No. of Members', default='0')
     member_list = TextAreaField('Members', default='Can\'t be filled right now!')
-    project_description = TextAreaField('Project Description', validators=[Length(max=100), DataRequired()])
+    project_description = TextAreaField('Project Description', validators=[Length(max=500), DataRequired()])
     owner = True
     channel = ''
     timestamp = datetime.datetime.now()
-    submit = SubmitField('Create')
+    submit = SubmitField('Create', render_kw={'class': 'btn btn-success'})
 
     # def validate_name(self, name):
     #     project = Project.query.filter_by(name=name).first()
@@ -96,7 +96,14 @@ class EditProfileForm(FlaskForm):
         "Topics I'm interested in",
         description='Insert the topics you\'re interested in or proficient in separated by a semicolon (;).'
     )
-    github_profile = StringField('GitHub profile link (or username)')
+    github_profile = StringField(
+        'GitHub profile link (or username)',
+        render_kw={
+            'class': 'form-control',
+            'id': 'basic-url',
+            'aria-describedby': "basic-addon3 basic-addon4"
+        }
+    )
     about_me = TextAreaField(
         'About me',
         description='Write a short description about yourself. Can include your achievements, things you are interested'
@@ -108,7 +115,7 @@ class EditProfileForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = ''
     timestamp = datetime.datetime.now()
-    submit = SubmitField('Update')
+    submit = SubmitField('Update', render_kw={'class': 'btn btn-primary'})
 
     def __init__(self, original_username, *args, **kwargs):
         super(EditProfileForm, self).__init__(*args, **kwargs)
@@ -119,6 +126,17 @@ class EditProfileForm(FlaskForm):
             user = User.query.filter_by(username=self.username.data).first()
             if user is not None:
                 raise ValidationError('Please use a different username.')
+
+
+class ResetPasswordRequestForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Request Password Reset', render_kw={'class': 'btn btn-primary'})
+
+
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField('Password', validators=[DataRequired()])
+    password2 = PasswordField('Repeat Password', validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Request Password Reset', render_kw={'class': 'btn btn-primary'})
 
 
 class EmptyForm(FlaskForm):
